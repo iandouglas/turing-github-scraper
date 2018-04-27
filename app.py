@@ -32,21 +32,18 @@ def get_user_pr(account, repo, username):
     soup = BeautifulSoup(r.text, "html.parser")
     list_items = soup.select("li")
     for list_item in list_items:
-        # print list_item
         links = list_item.select("a")
         if len(links) >= 2:
             pr = 'https://github.com/{}'.format(links[0]['href'])
             user = links[1].text
-            # print(pr, user)
-            # print('-'*100)
             if '/pull/' in pr and (not username or (username and username.lower() == user.lower())):
                 pr_list.append(pr)
     counter_position = None
-    print(pr_list)
     if len(pr_list) == 1:
         return pr_list[0]
-    return jsonify({'pr_list': pr_list})
-
+    elif len(pr_list) > 1:
+        return jsonify({'pr_list': pr_list})
+    return "None"
 
 if __name__ == '__main__':
     app.run(debug=True)
