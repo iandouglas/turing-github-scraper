@@ -30,14 +30,13 @@ def get_user_pr(account, repo, username):
 
     r = requests.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
-    list_items = soup.select("li")
-    for list_item in list_items:
-        links = list_item.select("a")
-        if len(links) >= 2:
-            pr = 'https://github.com/{}'.format(links[0]['href'])
-            user = links[1].text
-            if '/pull/' in pr and (not username or (username and username.lower() == user.lower())):
-                pr_list.append(pr)
+    links = soup.select("a")
+    for idx, link in enumerate(links):
+        if '{}/{}/pull/'.format(account, repo) in link['href']:
+            user = links[idx+1].text
+            if not username or (username and username.lower() == user.lower()):
+                pr_list.append('https://github.com/{}'.format(link['href']))
+
     counter_position = None
     if len(pr_list) == 1:
         return pr_list[0]
